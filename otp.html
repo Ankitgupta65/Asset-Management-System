@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OTP Verification</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Verify OTP</h2>
+    <form id="verifyForm">
+      <input type="email" id="email" placeholder="Enter your email" required />
+      <input type="text" id="otp" placeholder="Enter OTP" required />
+      <input type="password" id="password" placeholder="Enter your password again" required />
+      <button type="submit">Verify OTP</button>
+    </form>
+    <p id="resultMsg" style="margin-top: 10px;"></p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("verifyForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const otp = document.getElementById("otp").value;
+        const password = document.getElementById("password").value;
+        const resultMsg = document.getElementById("resultMsg");
+
+        try {
+          fetch("/api/auth/verify", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ email, otp })
+});
+
+          const data = await response.json();
+          resultMsg.innerText = data.message;
+
+          if (response.ok) {
+            resultMsg.style.color = "green";
+            // ✅ Redirect to login page after 2 seconds
+            setTimeout(() => {
+              window.location.href = "/login.html";
+            }, 2000);
+          } else {
+            resultMsg.style.color = "red";
+          }
+
+        } catch (error) {
+          console.error("Error:", error);
+          resultMsg.innerText = "Something went wrong. Try again.";
+          resultMsg.style.color = "red";
+        }
+      });
+    });
+  </script>
+</body>
+</html>

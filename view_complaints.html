@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Complaint List</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #ece9e6, #ffffff);
+      margin: 0;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background-color: #fff;
+      border-radius: 15px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(90deg, #007bff, #00c6ff);
+      padding: 20px;
+      color: white;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+    }
+
+    th, td {
+      padding: 14px 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      tr {
+        margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        border-radius: 10px;
+        padding: 10px;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 6px;
+        color: #333;
+      }
+
+      th {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Complaint List</div>
+    <table>
+      <thead>
+        <tr>
+          <th>User Email</th>
+          <th>Subject</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody id="complaintsBody">
+        <!-- Rows will be inserted here dynamically -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function loadComplaints() {
+      const res = await fetch('http://localhost:5000/api/complaints');
+      const complaints = await res.json();
+
+      const tbody = document.getElementById('complaintsBody');
+      tbody.innerHTML = '';
+
+      complaints.forEach(c => {
+        tbody.innerHTML += `
+          <tr>
+            <td data-label="User Email">${c.userEmail}</td>
+            <td data-label="Subject">${c.subject}</td>
+            <td data-label="Description">${c.description}</td>
+            <td data-label="Status">${c.status}</td>
+            <td data-label="Created At">${new Date(c.createdAt).toLocaleString()}</td>
+          </tr>
+        `;
+      });
+    }
+
+    loadComplaints();
+  </script>
+</body>
+</html>

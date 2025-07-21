@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      width: 320px;
+      transform: scale(0.8);
+      opacity: 0;
+      animation: scaleIn 0.3s ease forwards;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        background-color: rgba(0, 0, 0, 0);
+      }
+      to {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    #addAssetForm input,
+    #addAssetForm select,
+    #addAssetForm button {
+      width: 100%;
+      margin: 6px 0;
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    #addAssetForm button[type="submit"] {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #addAssetForm button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+    #addAssetForm button[type="button"] {
+      background-color: #ccc;
+      border: none;
+      cursor: pointer;
+    }
+
+    #addAssetForm button[type="button"]:hover {
+      background-color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Mecon</h2>
+    <a href="#" data-target="dashboard-section"><i class="fas fa-chart-line"></i> Dashboard</a>
+    <a href="#" data-target="assets-section"><i class="fas fa-box"></i> Manage Assets</a>
+    <a href="#" data-target="reports-section"><i class="fas fa-file-alt"></i> Reports</a>
+    <a href="complaint.html"><i class="fas fa-exclamation-triangle"></i> Raise Complaint</a>
+    <a href="view_complaints.html"><i class="fas fa-list"></i> View Complaints</a>
+    <a href="#" data-target="admin-complaints-section">
+      <i class="fas fa-tools"></i> IT Complaints
+      <span id="complaint-badge" style="background:red; color:white; font-size:12px; padding:2px 6px; border-radius:12px; margin-left:5px; display:none;"></span>
+    </a>
+    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <div id="dashboard-section" class="section">
+      <h2>Dashboard</h2>
+      <p>Welcome to your Asset Management Dashboard! Here you can get an overview of your assets and their statuses.</p>
+    </div>
+
+    <div id="assets-section" class="section" style="display:none;">
+      <h2>Manage Assets</h2>
+      <p>Select an asset category below to view and manage its assets.</p>
+      <div class="category-cards">
+        <div class="card" data-category="Laptop"><i class="fas fa-laptop"></i><span>Laptop</span></div>
+        <div class="card" data-category="Computer"><i class="fas fa-desktop"></i><span>Computer</span></div>
+        <div class="card" data-category="Mouse"><i class="fas fa-mouse"></i><span>Mouse</span></div>
+        <div class="card" data-category="Keyboard"><i class="fas fa-keyboard"></i><span>Keyboard</span></div>
+        <div class="card" data-category="Printer"><i class="fas fa-print"></i><span>Printer</span></div>
+        <div class="card" data-category="Scanner"><i class="fas fa-qrcode"></i><span>Scanner</span></div>
+      </div>
+
+      <div class="filter-bar">
+        <label>Min Price: <input type="number" id="minPrice" value="0"></label>
+        <label>Max Price: <input type="number" id="maxPrice" value="100000"></label>
+        <label>Status:
+          <select id="statusFilter">
+            <option>All</option>
+            <option>Available</option>
+            <option>Assigned</option>
+          </select>
+        </label>
+        <button onclick="loadAssets()">Apply Filter</button>
+        <button id="addAssetBtn">Add Asset</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Value (₹)</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="asset-table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Add Asset Modal -->
+    <div id="addAssetModal" class="modal">
+      <div class="modal-content">
+        <h3>Add New Asset</h3>
+        <form id="addAssetForm">
+          <input type="text" name="name" placeholder="Asset Name" required><br>
+          <input type="text" name="description" placeholder="Description" required><br>
+          <input type="number" name="value" placeholder="Value ₹" required><br>
+          <select name="status">
+            <option value="Available">Available</option>
+            <option value="Assigned">Assigned</option>
+          </select><br>
+          <button type="submit">Add</button>
+          <button type="button" onclick="closeAssetModal()">Cancel</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="assign-section" class="section" style="display:none;">
+      <h2>Assign Assets</h2>
+      <div class="assign-form">
+    <label>Asset:
+      <select id="assignAssetSelect"></select>
+    </label>
+    <label>User Email:
+      <input type="email" id="assignUserEmail" placeholder="Enter user email" />
+    </label>
+    <button onclick="assignAsset()">Assign</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Asset</th>
+        <th>Assigned To</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="assignedTableBody"></tbody>
+  </table>
+</div>
+  
+
+    
+
+    <div id="reports-section" class="section" style="display:none;">
+      <h2>Reports</h2>
+      <p>[Placeholder for Reports]</p>
+    </div>
+
+    <div id="admin-complaints-section" class="section" style="display:none;">
+      <h2>Complaint Management</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>User Email</th>
+            <th>Subject</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Created At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="complaints-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("You are not logged in.");
+      window.location.href = "login.html";
+    }
+
+    document.getElementById('addAssetBtn').addEventListener('click', () => {
+      const modal = document.getElementById('addAssetModal');
+      modal.classList.add('show');
+    });
+
+    function closeAssetModal() {
+      const modal = document.getElementById('addAssetModal');
+      modal.classList.remove('show');
+    }
+
+    document.getElementById('addAssetForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = Object.fromEntries(new FormData(e.target).entries());
+      console.log("🟡 Form data:", formData);
+
+
+      const res = await fetch('http://localhost:5000/api/assets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (res.ok) {
+        alert("✅ Asset added");
+        closeAssetModal();
+        loadAssets();
+      } else {
+        alert("❌ Failed to add asset");
+      }
+    });
+
+    document.querySelectorAll('.sidebar a[data-target]').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const target = link.getAttribute('data-target');
+        document.querySelectorAll('.section').forEach(s => s.style.display = s.id === target ? 'block' : 'none');
+
+        if (target === 'admin-complaints-section') loadComplaints();
+        if (target === 'assets-section') loadAssets();
+        // 👉 ADD THIS BELOW:
+    if (target === 'assign-section') {
+      loadAssignableAssets();
+      loadAssignedAssets();
+    }
+  });
+    });
+
+    async function loadAssets(category = '') {
+      const min = document.getElementById('minPrice').value || 0;
+      const max = document.getElementById('maxPrice').value || 100000;
+      const status = document.getElementById('statusFilter').value;
+
+      let url = `http://localhost:5000/api/assets?min=${min}&max=${max}`;
+      if (status !== 'All') url += `&status=${status}`;
+      if (category) url += `&category=${category}`;
+
+      try {
+        const res = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        const tbody = document.getElementById('asset-table-body');
+        tbody.innerHTML = data.map(asset => `
+          <tr>
+            <td>${asset.name}</td>
+            <td>${asset.description}</td>
+            <td>${asset.status}</td>
+            <td>₹${asset.value}</td>
+            <td><button onclick="deleteAsset('${asset._id}')">Delete</button></td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error("Error loading assets", err);
+      }
+    }
+
+    async function deleteAsset(id) {
+      if (!confirm("Are you sure you want to delete this asset?")) return;
+
+      const res = await fetch(`http://localhost:5000/api/assets/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (res.ok) {
+        loadAssets();
+      } else {
+        alert("Failed to delete asset.");
+      }
+    }
+
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => {
+        const category = card.getAttribute('data-category');
+        loadAssets(category);
+      });
+    });
+
+    async function loadComplaints() {
+      const res = await fetch('http://localhost:5000/api/complaints', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      const tbody = document.getElementById('complaints-body');
+      tbody.innerHTML = data.map(c => `
+        <tr>
+          <td>${c.userEmail}</td>
+          <td>${c.subject}</td>
+          <td>${c.description}</td>
+          <td>${c.status}</td>
+          <td>${new Date(c.createdAt).toLocaleString()}</td>
+          <td>
+            ${c.status === 'Pending' ? `<button onclick="approveComplaint('${c._id}')">Approve</button>` : '✔'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function approveComplaint(id) {
+      const res = await fetch(`http://localhost:5000/api/complaints/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: 'Approved' })
+      });
+      if (res.ok) {
+        loadComplaints();
+        loadPendingComplaintCount();
+      } else {
+        alert("Approval failed.");
+      }
+    }
+
+    async function loadPendingComplaintCount() {
+      try {
+        const res = await fetch('http://localhost:5000/api/complaints', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const complaints = await res.json();
+        const pendingCount = complaints.filter(c => c.status === 'Pending').length;
+        const badge = document.getElementById('complaint-badge');
+
+        if (pendingCount > 0) {
+          badge.textContent = pendingCount;
+          badge.style.display = 'inline-block';
+        } else {
+          badge.style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Failed to load complaint count', err);
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      alert('Logged out.');
+      window.location.href = 'login.html';
+    }
+
+    window.onload = () => {
+      loadPendingComplaintCount();
+    };
+
+    async function loadAssignableAssets() {
+  const res = await fetch('http://localhost:5000/api/assets', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  const dropdown = document.getElementById('assignAssetSelect');
+  dropdown.innerHTML = data
+    .filter(a => !a.assignedTo)
+    .map(a => `<option value="${a._id}">${a.name}</option>`)
+    .join('');
+}
+
+async function assignAsset() {
+  const assetId = document.getElementById('assignAssetSelect').value;
+  const userEmail = document.getElementById('assignUserEmail').value;
+
+  if (!assetId || !userEmail) return alert('Please select asset and enter user email');
+
+  const res = await fetch(`http://localhost:5000/api/assets/${assetId}/assign`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ assignedTo: userEmail }),
+  });
+
+  if (res.ok) {
+    alert('✅ Asset assigned successfully!');
+    loadAssignableAssets();
+    loadAssignedAssets();
+  } else {
+    alert('❌ Assignment failed.');
+  }
+}
+
+async function loadAssignedAssets() {
+  const res = await fetch('http://localhost:5000/api/assets', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  const assigned = data.filter(a => a.assignedTo);
+  const table = document.getElementById('assignedTableBody');
+  table.innerHTML = assigned
+    .map(
+      a => `
+    <tr>
+      <td>${a.name}</td>
+      <td>${a.assignedTo}</td>
+      <td>${new Date(a.dateAssigned).toLocaleDateString()}</td>
+      <td>
+        <button onclick="unassignAsset('${a._id}')">Unassign</button>
+      </td>
+    </tr>`
+    )
+    .join('');
+}
+
+async function unassignAsset(id) {
+  const res = await fetch(`http://localhost:5000/api/assets/${id}/assign`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ assignedTo: '' }),
+  });
+
+  if (res.ok) {
+    alert('🔄 Asset unassigned');
+    loadAssignableAssets();
+    loadAssignedAssets();
+  } else {
+    alert('Unassign failed');
+  }
+}
+
+  </script>
+</body>
+</html>

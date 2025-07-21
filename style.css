@@ -1,0 +1,266 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c') no-repeat center center fixed !important;
+  background-size: cover !important;
+}
+
+/* Only center on auth pages */
+body.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background-color: rgba(0, 0, 0, 0.85);
+  height: 100vh;
+  padding: 20px;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 24px;
+  color: #28a745;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  transition: background 0.3s;
+}
+
+.sidebar a i {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.sidebar a:hover {
+  background-color: #28a745;
+}
+
+.main-content {
+  margin-left: 220px;
+  padding: 30px;
+  width: calc(100% - 220px);
+  color: white;
+  box-sizing: border-box;
+}
+
+.section {
+  background-color: rgba(0, 0, 0, 0.75);
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+.category-cards {
+  display: flex;
+  gap: 20px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: white;
+  color: #333;
+  padding: 20px;
+  border-radius: 10px;
+  width: 130px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.card.selected {
+  border: 2px solid #007bff;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+}
+
+.card i {
+  font-size: 30px;
+  color: #3498db;
+  margin-bottom: 10px;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.filter-bar {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.filter-bar input,
+.filter-bar select {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.filter-bar button {
+  padding: 10px 15px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.filter-bar button:hover {
+  background: #2980b9;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 20px;
+  color: #000;
+}
+
+table th,
+table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.text-red {
+  color: #e74c3c;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.text-green {
+  color: #2ecc71;
+  cursor: pointer;
+}
+
+/* Centered Auth Form */
+.auth-container {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.92);
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  max-width: 350px;
+  width: 90%;
+  animation: fadeIn 0.6s ease-out;
+  margin-top: 100px;
+}
+
+.auth-container h1 {
+  margin-bottom: 25px;
+  font-size: 28px;
+  color: #2c3e50;
+}
+
+.auth-container input,
+.auth-container select,
+.auth-container button {
+  width: 100%;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.auth-container button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  transition: background 0.3s ease;
+  font-weight: 600;
+}
+
+.auth-container button:hover {
+  background-color: #2980b9;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body, html {
+  overflow-x: hidden;
+}
+
+/* Assign Assets Section */
+.assign-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+  align-items: center;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  color: #333;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.assign-container label {
+  font-weight: bold;
+  flex: 1 1 100%;
+}
+
+.assign-container select,
+.assign-container button {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  min-width: 180px;
+}
+
+.assign-container button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.assign-container button:hover {
+  background-color: #218838;
+}
